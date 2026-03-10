@@ -1,114 +1,141 @@
 package hotel.servicio;
 
+import hotel.modelo.Cliente;
 import hotel.modelo.Habitacion;
 import hotel.modelo.Reserva;
 import hotel.repositorio.RepositorioHabitacion;
 import hotel.repositorio.RepositorioReserva;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
- * Servicio de aplicación responsable de crear reservas, aplicando validaciones
- * y reglas de negocio. No persiste datos directamente; delega en los repositorios
- * y delega la verificación de disponibilidad en {@link ServicioDisponibilidad}.
+ * Servicio encargado de la creación y consulta de reservas.
  *
- * <p><b>Diseño (SOLID)</b>:
- * <ul>
- *   <li>SRP: Esta clase sólo coordina la creación de reservas y validaciones de negocio.</li>
- *   <li>DIP: Depende de interfaces (repositorios) y de un servicio especializado.</li>
- * </ul>
- *
- * <p><b>Reglas implementadas</b>:
- * <ul>
- *   <li>La habitación debe existir.</li>
- *   <li>La fecha de salida debe ser posterior a la fecha de entrada.</li>
- *   <li>No se permite crear una reserva si hay conflicto de fechas.</li>
- * </ul>
- *
- * <p><b>Dependencias esperadas</b> (contrato de integración):
- * <ul>
- *   <li>{@code RepositorioHabitacion#obtenerPorNumero(int numero)}</li>
- *   <li>{@code RepositorioReserva#guardar(Reserva reserva)}</li>
- * </ul>
- * Además, se utiliza {@link ServicioDisponibilidad#estaDisponible(int, LocalDate, LocalDate)}.
+ * Aquí se aplican las principales reglas de negocio relacionadas
+ * con el proceso de reservación.
  */
 public class ServicioReserva {
 
-    private final RepositorioReserva repositorioReserva;
     private final RepositorioHabitacion repositorioHabitacion;
+    private final RepositorioReserva repositorioReserva;
     private final ServicioDisponibilidad servicioDisponibilidad;
 
     /**
-     * Crea el servicio de reservas con sus dependencias.
-     * @param repositorioReserva acceso a persistencia de reservas en memoria
-     * @param repositorioHabitacion acceso a habitaciones (validación de existencia)
-     * @param servicioDisponibilidad componente reutilizado para validar disponibilidad
+     * Constructor del servicio.
+     *
+     * @param repositorioHabitacion repositorio de habitaciones
+     * @param repositorioReserva repositorio de reservas
+     * @param servicioDisponibilidad servicio de disponibilidad
      */
-    public ServicioReserva(RepositorioReserva repositorioReserva,
-                           RepositorioHabitacion repositorioHabitacion,
+    public ServicioReserva(RepositorioHabitacion repositorioHabitacion,
+                           RepositorioReserva repositorioReserva,
                            ServicioDisponibilidad servicioDisponibilidad) {
-        if (repositorioReserva == null || repositorioHabitacion == null || servicioDisponibilidad == null) {
-            throw new IllegalArgumentException("Las dependencias del servicio no pueden ser nulas.");
-        }
-        this.repositorioReserva = repositorioReserva;
         this.repositorioHabitacion = repositorioHabitacion;
+        this.repositorioReserva = repositorioReserva;
         this.servicioDisponibilidad = servicioDisponibilidad;
     }
 
     /**
-     * Crea una reserva aplicando todas las validaciones necesarias. La reserva recibida
-     * debe contener al menos: habitación (con su número), fecha de entrada y fecha de salida.
+     * Crea una nueva reserva si se cumplen las reglas de negocio.
      *
-     * <p><b>Nota de integración</b>: Se asume que la entidad {@code Reserva} expone
-     * métodos de acceso como {@code getHabitacion()}, {@code getFechaEntrada()} y
-     * {@code getFechaSalida()}. El repositorio asignará el identificador si corresponde.
-     *
-     * @param reserva objeto de reserva a crear
-     * @return la reserva persistida (posiblemente con ID asignado por el repositorio)
-     * @throws IllegalArgumentException si los datos son inválidos o la habitación no existe
-     * @throws IllegalStateException si no hay disponibilidad para el rango solicitado
+     * @param idReserva id de la reserva
+     * @param cliente cliente que realiza la reserva
+     * @param numeroHabitacion número de la habitación
+     * @param fechaEntrada fecha de entrada
+     * @param fechaSalida fecha de salida
+     * @return reserva creada
+     * @throws IllegalArgumentException si alguna validación falla
      */
-    public Reserva crearReserva(Reserva reserva) {
-        if (reserva == null) {
-            throw new IllegalArgumentException("La reserva no puede ser nula.");
-        }
-        if (reserva.getHabitacion() == null) {
-            throw new IllegalArgumentException("La reserva debe indicar una habitación.");
-        }
-        Habitacion habSolicitada = reserva.getHabitacion();
-        Integer numeroHabitacion = habSolicitada.getNumero(); // Se asume getter de número
+    public Reserva crearReserva(int idReserva,
+                                Cliente cliente,
+                                int numeroHabitacion,
+                                LocalDate fechaEntrada,
+                                LocalDate fechaSalida) {
 
-        if (numeroHabitacion == null) {
-            throw new IllegalArgumentException("La habitación de la reserva debe tener número.");
+        validarIdReserva(idReserva);
+        validarCliente(cliente);
+        validarFechas(fechaEntrada, fechaSalida);
+
+        Habitacion habitacion = repositorioHabitacion.buscarPorNumero(numeroHabitacion);
+        if (habitacion == null) {
+            throw new IllegalArgumentException("No existe una habitación con el número indicado.");
         }
 
-        LocalDate entrada = reserva.getFechaEntrada();
-        LocalDate salida = reserva.getFechaSalida();
-
-        // Validación de fechas (misma política que ServicioDisponibilidad)
-        if (entrada == null || salida == null) {
-            throw new IllegalArgumentException("Las fechas de entrada y salida no pueden ser nulas.");
+        if (!servicioDisponibilidad.estaDisponible(numeroHabitacion, fechaEntrada, fechaSalida)) {
+            throw new IllegalArgumentException("La habitación no está disponible en el rango de fechas solicitado.");
         }
-        if (!salida.isAfter(entrada)) {
+
+        Reserva reserva = new Reserva(idReserva, cliente, habitacion, fechaEntrada, fechaSalida);
+        repositorioReserva.guardar(reserva);
+
+        return reserva;
+    }
+
+    /**
+     * Obtiene todas las reservas registradas.
+     *
+     * @return lista de reservas
+     */
+    public List<Reserva> obtenerReservas() {
+        return repositorioReserva.obtenerTodas();
+    }
+
+    /**
+     * Valida el id de la reserva.
+     *
+     * @param idReserva id de la reserva
+     */
+    private void validarIdReserva(int idReserva) {
+        if (idReserva <= 0) {
+            throw new IllegalArgumentException("El id de la reserva debe ser mayor que cero.");
+        }
+
+        if (repositorioReserva.buscarPorId(idReserva) != null) {
+            throw new IllegalArgumentException("Ya existe una reserva con ese id.");
+        }
+    }
+
+    /**
+     * Valida los datos básicos del cliente.
+     *
+     * @param cliente cliente a validar
+     */
+    private void validarCliente(Cliente cliente) {
+        if (cliente == null) {
+            throw new IllegalArgumentException("El cliente no puede ser nulo.");
+        }
+
+        if (cliente.getId() <= 0) {
+            throw new IllegalArgumentException("El id del cliente debe ser mayor que cero.");
+        }
+
+        if (cliente.getNombre() == null || cliente.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del cliente es obligatorio.");
+        }
+
+        if (cliente.getDocumento() == null || cliente.getDocumento().trim().isEmpty()) {
+            throw new IllegalArgumentException("El documento del cliente es obligatorio.");
+        }
+
+        if (cliente.getTelefono() == null || cliente.getTelefono().trim().isEmpty()) {
+            throw new IllegalArgumentException("El teléfono del cliente es obligatorio.");
+        }
+    }
+
+    /**
+     * Valida las fechas de la reserva.
+     *
+     * @param fechaEntrada fecha de entrada
+     * @param fechaSalida fecha de salida
+     */
+    private void validarFechas(LocalDate fechaEntrada, LocalDate fechaSalida) {
+        if (fechaEntrada == null || fechaSalida == null) {
+            throw new IllegalArgumentException("Las fechas no pueden ser nulas.");
+        }
+
+        if (!fechaSalida.isAfter(fechaEntrada)) {
             throw new IllegalArgumentException("La fecha de salida debe ser posterior a la fecha de entrada.");
         }
-
-        // Validar existencia de la habitación
-        Habitacion existente = repositorioHabitacion.buscarPorNumero(numeroHabitacion);
-        if (existente == null) {
-            throw new IllegalArgumentException("La habitación " + numeroHabitacion + " no existe.");
-        }
-
-        // Verificar disponibilidad previa a la creación
-        boolean disponible = servicioDisponibilidad.estaDisponible(numeroHabitacion, entrada, salida);
-        if (!disponible) {
-            throw new IllegalStateException("La habitación " + numeroHabitacion +
-                    " no está disponible en el rango solicitado.");
-        }
-
-        // Persistir a través del repositorio
-        // Contrato esperado: el repositorio devuelve la reserva guardada (con ID si aplica).
-        repositorioReserva.guardar(reserva);
-        return reserva;
     }
 }

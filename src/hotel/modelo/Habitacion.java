@@ -1,16 +1,15 @@
 package hotel.modelo;
 
 /**
- * Clase que representa una habitación del hotel.
+ * Representa una habitación del hotel.
  *
- * Esta entidad contiene la información general de la habitación,
- * como su número, tipo y estado general.
+ * Contiene datos relevantes como número, tipo y estado general.
  */
 public class Habitacion {
 
     private int numero;
     private TipoHabitacion tipo;
-    private String estadoGeneral;
+    private String estado;
 
     /**
      * Constructor vacío.
@@ -19,16 +18,16 @@ public class Habitacion {
     }
 
     /**
-     * Constructor con los atributos principales de la habitación.
+     * Constructor con parámetros.
      *
-     * @param numero número identificador de la habitación
+     * @param numero número de la habitación
      * @param tipo tipo de habitación
-     * @param estadoGeneral estado general de la habitación
+     * @param estado estado general de la habitación
      */
-    public Habitacion(int numero, TipoHabitacion tipo, String estadoGeneral) {
+    public Habitacion(int numero, TipoHabitacion tipo, String estado) {
         this.numero = numero;
         this.tipo = tipo;
-        this.estadoGeneral = estadoGeneral;
+        this.estado = estado;
     }
 
     /**
@@ -43,14 +42,14 @@ public class Habitacion {
     /**
      * Establece el número de la habitación.
      *
-     * @param numero nuevo número de la habitación
+     * @param numero nuevo número
      */
     public void setNumero(int numero) {
         this.numero = numero;
     }
 
     /**
-     * Obtiene el tipo de la habitación.
+     * Obtiene el tipo de habitación.
      *
      * @return tipo de habitación
      */
@@ -59,9 +58,9 @@ public class Habitacion {
     }
 
     /**
-     * Establece el tipo de la habitación.
+     * Establece el tipo de habitación.
      *
-     * @param tipo nuevo tipo de habitación
+     * @param tipo nuevo tipo
      */
     public void setTipo(TipoHabitacion tipo) {
         this.tipo = tipo;
@@ -70,32 +69,31 @@ public class Habitacion {
     /**
      * Obtiene el estado general de la habitación.
      *
-     * @return estado general de la habitación
+     * @return estado general
      */
-    public String getEstadoGeneral() {
-        return estadoGeneral;
+    public String getEstado() {
+        return estado;
     }
 
     /**
      * Establece el estado general de la habitación.
      *
-     * @param estadoGeneral nuevo estado general
+     * @param estado nuevo estado
      */
-    public void setEstadoGeneral(String estadoGeneral) {
-        this.estadoGeneral = estadoGeneral;
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     /**
-     * Devuelve una representación textual de la habitación.
+     * Representación textual de la habitación.
      *
-     * @return texto con la información de la habitación
+     * @return texto descriptivo de la habitación
      */
     @Override
     public String toString() {
-        return "Habitacion{" +
-                "numero=" + numero +
-                ", tipo=" + tipo +
-                ", estadoGeneral='" + estadoGeneral + '\'' +
-                '}';
+        return "\nHabitacion:" +
+                "\nnumero = " + numero +
+                "\ntipo = " + tipo +
+                "\nestado = '" + estado + '\'';
     }
 }

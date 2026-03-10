@@ -1,65 +1,99 @@
 package hotel.consola;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 /**
-
- * Clase de utilidad para leer datos desde la consola.
-
- * Contiene métodos estáticos para leer texto y números.
-
+ * Clase de apoyo para leer datos desde consola de forma ordenada.
  */
-
 public class EntradaConsola {
 
-    // Scanner único para toda la clase
-
-    private static final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner;
 
     /**
-
-     * Lee un texto desde la consola.
-
-     * @param mensaje Mensaje que se muestra al usuario
-
-     * @return Texto ingresado por el usuario
-
+     * Constructor de la clase.
      */
-
-    public static String leerTexto(String mensaje) {
-
-        System.out.print(mensaje + ": ");
-
-        return scanner.nextLine();
-
+    public EntradaConsola() {
+        this.scanner = new Scanner(System.in);
     }
 
     /**
-
-     * Lee un número entero desde la consola.
-
-     * @param mensaje Mensaje que se muestra al usuario
-
-     * @return Número entero ingresado por el usuario
-
+     * Lee un texto desde consola.
+     *
+     * @param mensaje mensaje a mostrar al usuario
+     * @return texto ingresado
      */
+    public String leerTexto(String mensaje) {
+        System.out.print(mensaje);
+        return scanner.nextLine().trim();
+    }
 
-    public static int leerEntero(String mensaje) {
+    /**
+     * Lee un número entero desde consola.
+     *
+     * @param mensaje mensaje a mostrar al usuario
+     * @return número entero ingresado
+     */
+    public int leerEntero(String mensaje) {
+        while (true) {
+            System.out.print(mensaje);
+            String entrada = scanner.nextLine().trim();
 
-        System.out.print(mensaje + ": ");
-
-        try {
-
-            return Integer.parseInt(scanner.nextLine());
-
-        } catch (NumberFormatException e) {
-
-            System.out.println("Error: debe ingresar un número entero.");
-
-            return leerEntero(mensaje); // vuelve a pedir si hay error
-
+            try {
+                return Integer.parseInt(entrada);
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Debe ingresar un número entero.");
+            }
         }
-
     }
 
+    /**
+     * Lee una fecha desde consola en formato yyyy-MM-dd.
+     *
+     * @param mensaje mensaje a mostrar al usuario
+     * @return fecha ingresada
+     */
+    public LocalDate leerFecha(String mensaje) {
+        while (true) {
+            System.out.print(mensaje);
+            String entrada = scanner.nextLine().trim();
+
+            try {
+                return LocalDate.parse(entrada);
+            } catch (DateTimeParseException e) {
+                System.out.println("Fecha inválida. Debe usar el formato yyyy-MM-dd.");
+            }
+        }
+    }
+
+    /**
+     * Lee una opción de confirmación simple.
+     *
+     * @param mensaje mensaje a mostrar al usuario
+     * @return true si la respuesta es s, false en caso contrario
+     */
+    public boolean leerConfirmacion(String mensaje) {
+        while (true) {
+            System.out.print(mensaje);
+            String respuesta = scanner.nextLine().trim().toLowerCase();
+
+            if (respuesta.equals("s")) {
+                return true;
+            }
+
+            if (respuesta.equals("n")) {
+                return false;
+            }
+
+            System.out.println("Entrada inválida. Responda con 's' o 'n'.");
+        }
+    }
+
+    /**
+     * Cierra el recurso de entrada.
+     */
+    public void cerrar() {
+        scanner.close();
+    }
 }

@@ -3,10 +3,9 @@ package hotel.modelo;
 import java.time.LocalDate;
 
 /**
- * Clase que representa una reserva de una habitación.
+ * Representa una reserva de una habitación.
  *
- * Esta entidad relaciona a un cliente con una habitación
- * dentro de un rango de fechas determinado.
+ * Incluye el cliente, la habitación y el rango de fechas reservado.
  */
 public class Reserva {
 
@@ -23,7 +22,7 @@ public class Reserva {
     }
 
     /**
-     * Constructor con los atributos principales de la reserva.
+     * Constructor con parámetros.
      *
      * @param id identificador de la reserva
      * @param cliente cliente asociado a la reserva
@@ -40,7 +39,7 @@ public class Reserva {
     }
 
     /**
-     * Obtiene el identificador de la reserva.
+     * Obtiene el id de la reserva.
      *
      * @return id de la reserva
      */
@@ -49,9 +48,9 @@ public class Reserva {
     }
 
     /**
-     * Establece el identificador de la reserva.
+     * Establece el id de la reserva.
      *
-     * @param id nuevo id de la reserva
+     * @param id nuevo id
      */
     public void setId(int id) {
         this.id = id;
@@ -60,7 +59,7 @@ public class Reserva {
     /**
      * Obtiene el cliente asociado a la reserva.
      *
-     * @return cliente de la reserva
+     * @return cliente
      */
     public Cliente getCliente() {
         return cliente;
@@ -69,25 +68,25 @@ public class Reserva {
     /**
      * Establece el cliente asociado a la reserva.
      *
-     * @param cliente nuevo cliente de la reserva
+     * @param cliente nuevo cliente
      */
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
 
     /**
-     * Obtiene la habitación asociada a la reserva.
+     * Obtiene la habitación reservada.
      *
-     * @return habitación reservada
+     * @return habitación
      */
     public Habitacion getHabitacion() {
         return habitacion;
     }
 
     /**
-     * Establece la habitación asociada a la reserva.
+     * Establece la habitación reservada.
      *
-     * @param habitacion nueva habitación reservada
+     * @param habitacion nueva habitación
      */
     public void setHabitacion(Habitacion habitacion) {
         this.habitacion = habitacion;
@@ -130,18 +129,17 @@ public class Reserva {
     }
 
     /**
-     * Devuelve una representación textual de la reserva.
+     * Representación textual de la reserva.
      *
-     * @return texto con la información de la reserva
+     * @return texto descriptivo de la reserva
      */
     @Override
     public String toString() {
-        return "Reserva{" +
-                "id=" + id +
-                ", cliente=" + cliente +
-                ", habitacion=" + habitacion +
-                ", fechaEntrada=" + fechaEntrada +
-                ", fechaSalida=" + fechaSalida +
-                '}';
+        return "\nReserva:" +
+                "\nid = " + id +
+                "\ncliente = " + cliente +
+                "\nhabitacion = " + habitacion +
+                "\nfechaEntrada = " + fechaEntrada +
+                "\nfechaSalida = " + fechaSalida;
     }
 }
