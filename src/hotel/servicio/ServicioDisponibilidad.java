@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 
-public class ServicioDisponibilidad {
 
 
 
@@ -70,13 +69,13 @@ public class ServicioDisponibilidad {
             validarRangoFechas(fechaEntrada, fechaSalida);
 
             // Validar que la habitación exista desde el inicio del sistema
-            Habitacion habitacion = repositorioHabitacion.obtenerPorNumero(numeroHabitacion);
+            Habitacion habitacion = repositorioHabitacion.buscarPorNumero(numeroHabitacion);
             if (habitacion == null) {
                 throw new IllegalArgumentException("La habitación " + numeroHabitacion + " no existe.");
             }
 
             // Obtener reservas existentes de esa habitación y verificar traslape
-            List<Reserva> reservas = repositorioReserva.obtenerReservasPorHabitacion(numeroHabitacion);
+            List<Reserva> reservas = repositorioReserva.obtenerPorHabitacion(habitacion);
             for (Reserva r : reservas) {
                 if (r == null) continue;
                 LocalDate e = r.getFechaEntrada();
@@ -115,4 +114,4 @@ public class ServicioDisponibilidad {
             return !( !s1.isAfter(e2) || !s2.isAfter(e1) );
         }
     }
-}
+
