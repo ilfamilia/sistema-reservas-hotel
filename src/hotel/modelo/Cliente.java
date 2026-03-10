@@ -1,10 +1,7 @@
 package hotel.modelo;
 
 /**
- * Clase que representa a un cliente o huésped del hotel.
- *
- * Esta entidad almacena la información básica del cliente
- * asociada a una reserva.
+ * Representa al cliente o huésped del hotel.
  */
 public class Cliente {
 
@@ -15,20 +12,17 @@ public class Cliente {
 
     /**
      * Constructor vacío.
-     *
-     * Se incluye para facilitar la creación de objetos
-     * en distintos contextos académicos o de prueba.
      */
     public Cliente() {
     }
 
     /**
-     * Constructor con todos los atributos principales del cliente.
+     * Constructor con parámetros.
      *
      * @param id identificador del cliente
      * @param nombre nombre completo del cliente
-     * @param documento documento de identificación
-     * @param telefono número de teléfono del cliente
+     * @param documento documento de identidad del cliente
+     * @param telefono teléfono del cliente
      */
     public Cliente(int id, String nombre, String documento, String telefono) {
         this.id = id;
@@ -49,7 +43,7 @@ public class Cliente {
     /**
      * Establece el identificador del cliente.
      *
-     * @param id nuevo id del cliente
+     * @param id nuevo id
      */
     public void setId(int id) {
         this.id = id;
@@ -67,7 +61,7 @@ public class Cliente {
     /**
      * Establece el nombre del cliente.
      *
-     * @param nombre nuevo nombre del cliente
+     * @param nombre nuevo nombre
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
@@ -85,7 +79,7 @@ public class Cliente {
     /**
      * Establece el documento del cliente.
      *
-     * @param documento nuevo documento del cliente
+     * @param documento nuevo documento
      */
     public void setDocumento(String documento) {
         this.documento = documento;
@@ -103,24 +97,23 @@ public class Cliente {
     /**
      * Establece el teléfono del cliente.
      *
-     * @param telefono nuevo teléfono del cliente
+     * @param telefono nuevo teléfono
      */
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
 
     /**
-     * Devuelve una representación textual del cliente.
+     * Representación textual del cliente.
      *
-     * @return texto con la información del cliente
+     * @return texto descriptivo del cliente
      */
     @Override
     public String toString() {
-        return "Cliente{" +
-                "id=" + id +
-                ", nombre='" + nombre + '\'' +
-                ", documento='" + documento + '\'' +
-                ", telefono='" + telefono + '\'' +
-                '}';
+        return "\nCliente: " +
+                "\nid = " + id +
+                "\nnombre = '" + nombre + '\'' +
+                "\ndocumento = '" + documento + '\'' +
+                "\ntelefono = '" + telefono + '\'';
     }
 }
