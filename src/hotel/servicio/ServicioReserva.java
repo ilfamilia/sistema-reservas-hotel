@@ -94,7 +94,7 @@ public class ServicioReserva {
         }
 
         // Validar existencia de la habitación
-        Habitacion existente = repositorioHabitacion.obtenerPorNumero(numeroHabitacion);
+        Habitacion existente = repositorioHabitacion.buscarPorNumero(numeroHabitacion);
         if (existente == null) {
             throw new IllegalArgumentException("La habitación " + numeroHabitacion + " no existe.");
         }
@@ -108,6 +108,7 @@ public class ServicioReserva {
 
         // Persistir a través del repositorio
         // Contrato esperado: el repositorio devuelve la reserva guardada (con ID si aplica).
-        return repositorioReserva.guardar(reserva);
+        repositorioReserva.guardar(reserva);
+        return reserva;
     }
 }
